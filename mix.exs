@@ -1,4 +1,6 @@
 defmodule DHCP.MixProject do
+  use Mix.Project
+
   @source_url "https://github.com/gsmlg-dev/ex_dhcp.git"
   @version "0.0.0"
 
