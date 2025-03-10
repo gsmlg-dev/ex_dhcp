@@ -151,10 +151,10 @@ defmodule DHCP.Message do
           yiaddr: :inet.ip4_address(),
           siaddr: :inet.ip4_address(),
           giaddr: :inet.ip4_address(),
-          chaddr: <<_::_*16>>,
+          chaddr: binary(),
           sname: <<_::_*64>>,
           file: <<_::_*128>>,
-          options: [binary()]
+          options: [{0..255, bitstring()}]
         }
 
   defstruct op: nil,
@@ -194,14 +194,33 @@ defmodule DHCP.Message do
       yiaddr: binary_to_ip4_address(<<yiaddr::32>>),
       siaddr: binary_to_ip4_address(<<siaddr::32>>),
       giaddr: binary_to_ip4_address(<<giaddr::32>>),
-      chaddr: chaddr,
+      chaddr: parse_mac_address(chaddr, hlen),
       sname: sname,
       file: file,
-      options: options
+      options: parse_dhcp_options(options)
     }
   end
 
   defp binary_to_ip4_address(<<a::8, b::8, c::8, d::8>>) do
     {a, b, c, d}
+  end
+
+  defp parse_mac_address(chaddr, hlen) do
+    chaddr
+    |> :binary.part(0, hlen)
+    |> Base.encode16(case: :lower)
+    |> String.replace(~r/(..)/, "\\1:")
+    |> String.trim_trailing(":")
+  end
+
+  defp parse_dhcp_options(<<>>), do: []
+
+  defp parse_dhcp_options(<<99, 130, 83, 99, rest::binary>>), do: parse_options(rest)
+
+  # End Option
+  defp parse_options(<<255, _rest::binary>>), do: []
+
+  defp parse_options(<<code, len, value::binary-size(len), rest::binary>>) do
+    [{code, value} | parse_options(rest)]
   end
 end

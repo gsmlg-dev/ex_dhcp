@@ -21,6 +21,6 @@ defmodule DHCP.MessageTest do
 
     msg = DHCP.Message.from_binary(raw)
 
-    IO.inspect(msg)
+    IO.inspect(msg, limit: :infinity)
   end
 end
