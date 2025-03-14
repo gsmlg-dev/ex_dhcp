@@ -137,7 +137,8 @@ defmodule DHCP.Message do
 
   """
 
-  # alias DHCP.Message
+  alias DHCP.Message
+  alias DHCP.Message.Option
 
   @type t :: %__MODULE__{
           op: 0..255,
@@ -154,7 +155,7 @@ defmodule DHCP.Message do
           chaddr: binary(),
           sname: <<_::_*64>>,
           file: <<_::_*128>>,
-          options: [{0..255, bitstring()}]
+          options: [Option.t()]
         }
 
   defstruct op: nil,
@@ -173,6 +174,7 @@ defmodule DHCP.Message do
             file: nil,
             options: []
 
+  @spec new() :: Message.t()
   def new() do
     %__MODULE__{}
   end
@@ -194,10 +196,10 @@ defmodule DHCP.Message do
       yiaddr: binary_to_ip4_address(<<yiaddr::32>>),
       siaddr: binary_to_ip4_address(<<siaddr::32>>),
       giaddr: binary_to_ip4_address(<<giaddr::32>>),
-      chaddr: parse_mac_address(chaddr, hlen),
+      chaddr: chaddr,
       sname: sname,
       file: file,
-      options: parse_dhcp_options(options)
+      options: Option.parse(options)
     }
   end
 
@@ -205,22 +207,45 @@ defmodule DHCP.Message do
     {a, b, c, d}
   end
 
-  defp parse_mac_address(chaddr, hlen) do
-    chaddr
-    |> :binary.part(0, hlen)
-    |> Base.encode16(case: :lower)
-    |> String.replace(~r/(..)/, "\\1:")
-    |> String.trim_trailing(":")
+  defimpl DHCP.Parameter, for: DHCP.Message do
+    @impl true
+    def to_binary(%DHCP.Message{} = message) do
+      <<message.op::8, message.htype::8, message.hlen::8, message.hops::8, message.xid::32,
+        message.secs::16, message.flags::16, message.ciaddr::32, message.yiaddr::32,
+        message.siaddr::32, message.giaddr::32, message.chaddr::binary-size(16),
+        message.sname::binary-size(64), message.file::binary-size(128),
+        Option.to_dhcp_binary(message.options)::binary>>
+    end
   end
 
-  defp parse_dhcp_options(<<>>), do: []
+  defimpl String.Chars, for: DHCP.Message do
+    def to_string(%DHCP.Message{} = message) do
+      """
+      === DHCP Message ===
+      Operation: #{message.op}
+      Hardware Type: #{message.htype}
+      Hardware Address Length: #{message.hlen}
+      Hops: #{message.hops}
+      Transaction ID: #{message.xid}
+      Seconds: #{message.secs}
+      Flags: #{message.flags}
+      Client IP Address: #{message.ciaddr |> :inet.ntoa()}
+      Your IP Address: #{message.yiaddr |> :inet.ntoa()}
+      Server IP Address: #{message.siaddr |> :inet.ntoa()}
+      Gateway IP Address: #{message.giaddr |> :inet.ntoa()}
+      Client Hardware Address: #{parse_mac_address(message.chaddr, message.hlen)}
 
-  defp parse_dhcp_options(<<99, 130, 83, 99, rest::binary>>), do: parse_options(rest)
+      === DHCP Options ===
+      #{Enum.map(message.options, &Kernel.to_string/1) |> Enum.join("")}
+      """
+    end
 
-  # End Option
-  defp parse_options(<<255, _rest::binary>>), do: []
-
-  defp parse_options(<<code, len, value::binary-size(len), rest::binary>>) do
-    [{code, value} | parse_options(rest)]
+    defp parse_mac_address(chaddr, hlen) do
+      chaddr
+      |> :binary.part(0, hlen)
+      |> Base.encode16(case: :lower)
+      |> String.replace(~r/(..)/, "\\1:")
+      |> String.trim_trailing(":")
+    end
   end
 end
