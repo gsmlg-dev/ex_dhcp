@@ -234,6 +234,8 @@ defmodule DHCP.Message do
       Server IP Address: #{message.siaddr |> :inet.ntoa()}
       Gateway IP Address: #{message.giaddr |> :inet.ntoa()}
       Client Hardware Address: #{parse_mac_address(message.chaddr, message.hlen)}
+      Server Name: #{message.sname |> String.trim(<<0>>)}
+      File: #{message.file |> String.trim(<<0>>)}
 
       === DHCP Options ===
       #{Enum.map(message.options, &Kernel.to_string/1) |> Enum.join("")}
