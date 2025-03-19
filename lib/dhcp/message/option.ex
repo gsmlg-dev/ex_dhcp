@@ -1188,8 +1188,10 @@ defmodule DHCP.Message.Option do
    The client identifier MAY consist of type-value pairs similar to the
    'htype'/'chaddr' fields defined in [3]. For instance, it MAY consist
    of a hardware type and hardware address. In this case the type field
-   SHOULD be one of the ARP hardware types defined in STD2 [22].  A
-   hardware type of 0 (zero) should be used when the value field
+   SHOULD be one of the ARP hardware types defined in -old STD2-
+   [RFC1700](https://datatracker.ietf.org/doc/html/rfc1700) replaced by
+   [New IANA online database](https://www.iana.org/assignments/arp-parameters/arp-parameters.xhtml#hardware-types).
+   A hardware type of 0 (zero) should be used when the value field
    contains an identifier other than a hardware address (e.g. a fully
    qualified domain name).
 
@@ -1465,7 +1467,9 @@ defmodule DHCP.Message.Option do
         {"Vendor class identifier", :int_list, value |> to_int_list(8, length)}
 
       61 ->
-        {"Client-identifier", :binary, value |> to_string()}
+        # Type  Client-Identifier
+        # {"Client-identifier", :int_list, value |> to_int_list(8, length)}
+        {"Client-identifier", :type_identifier, value |> to_type_identifier(length)}
 
       62 ->
         {"Netware/IP Domain Name", :binary, value |> to_string()}
@@ -1591,6 +1595,26 @@ defmodule DHCP.Message.Option do
     [{network, mask, router} | to_mask_network_route_list(rest, len - size)]
   end
 
+  defp to_type_identifier(<<type::8, identifier::binary>>, _len) do
+    case type do
+      0 ->
+        {"Non-hardware", identifier}
+
+      1 ->
+        mac =
+          identifier
+          |> :binary.part(0, 6)
+          |> Base.encode16(case: :lower)
+          |> String.replace(~r/(..)/, "\\1:")
+          |> String.trim_trailing(":")
+
+        {"Ethernet", mac}
+
+      _ ->
+        {type, identifier}
+    end
+  end
+
   defimpl DHCP.Parameter, for: Option do
     @impl true
     def to_binary(%Option{} = option) do
@@ -1603,10 +1627,22 @@ defmodule DHCP.Message.Option do
       decoded_value = Option.decode_option_value(option.type, option.length, option.value)
 
       """
-      Option(#{option.type}): #{parse_decoded_value(decoded_value)})}
+      Option(#{option.type}): #{parse_decoded_value(decoded_value)}
       """
     end
 
+    @spec parse_decoded_value(
+            {any(),
+             :binary
+             | :bool
+             | :int
+             | :int_list
+             | :ip
+             | :ip_list
+             | :ip_mask_list
+             | :network_mask_router_list
+             | :raw, any()}
+          ) :: <<_::16, _::_*8>>
     def parse_decoded_value({name, type, value}) do
       case type do
         :ip ->
@@ -1631,7 +1667,11 @@ defmodule DHCP.Message.Option do
           "#{name}: #{value}"
 
         :binary ->
-          "#{name}: #{value}"
+          "#{name}: #{value |> inspect()}"
+
+        :type_identifier ->
+          {type, identifier} = value
+          "#{name}: #{type} #{identifier |> inspect()}"
 
         :raw ->
           "#{name}: #{value |> inspect()}"
