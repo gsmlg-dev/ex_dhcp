@@ -137,7 +137,6 @@ defmodule DHCP.Message do
 
   """
 
-  alias DHCP.Message
   alias DHCP.Message.Option
 
   @type t :: %__MODULE__{
@@ -152,7 +151,7 @@ defmodule DHCP.Message do
           yiaddr: :inet.ip4_address(),
           siaddr: :inet.ip4_address(),
           giaddr: :inet.ip4_address(),
-          chaddr: binary(),
+          chaddr: <<_::_*16>>,
           sname: <<_::_*64>>,
           file: <<_::_*128>>,
           options: [Option.t()]
@@ -174,9 +173,25 @@ defmodule DHCP.Message do
             file: nil,
             options: []
 
-  @spec new() :: Message.t()
+  @spec new() :: t()
   def new() do
-    %__MODULE__{}
+    %__MODULE__{
+      op: 0,
+      htype: 0,
+      hlen: 0,
+      hops: 0,
+      xid: 0,
+      secs: 0,
+      flags: 0,
+      ciaddr: {0, 0, 0, 0},
+      yiaddr: {0, 0, 0, 0},
+      siaddr: {0, 0, 0, 0},
+      giaddr: {0, 0, 0, 0},
+      chaddr: <<0::8*16>>,
+      sname: <<0::8*64>>,
+      file: <<0::8*128>>,
+      options: []
+    }
   end
 
   def from_binary(

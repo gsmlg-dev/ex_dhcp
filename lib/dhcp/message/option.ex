@@ -1256,7 +1256,7 @@ defmodule DHCP.Message.Option do
 
   def to_dhcp_binary(options) do
     options_binary =
-      options |> Enum.map(fn opt -> DHCP.Parameter.to_binary(opt) end) |> Enum.join(<<>>)
+      options |> Enum.map(fn opt -> DHCP.to_binary(opt) end) |> Enum.join(<<>>)
 
     <<@magic_cookie::binary, options_binary::binary, @end_option>>
   end

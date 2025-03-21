@@ -2,7 +2,7 @@ defmodule DHCP.MessageTest do
   use ExUnit.Case
 
   test "new" do
-    assert %DHCP.Message{} == DHCP.Message.new()
+    assert %DHCP.Message{} = DHCP.Message.new()
   end
 
   test "from_binary 1" do
@@ -21,9 +21,28 @@ defmodule DHCP.MessageTest do
 
     msg = DHCP.Message.from_binary(raw)
 
+    assert %DHCP.Message{} = msg
+
+    assert 1 == msg.op
+    assert 1 == msg.htype
+    assert 6 == msg.hlen
+    assert 0 == msg.hops
+    assert 2_882_339_033 == msg.xid
+    assert 0 == msg.secs
+    assert 0 == msg.flags
+    assert {0, 0, 0, 0} == msg.ciaddr
+    assert {0, 0, 0, 0} == msg.yiaddr
+    assert {0, 0, 0, 0} == msg.siaddr
+    assert {0, 0, 0, 0} == msg.giaddr
+    chaddr = msg.chaddr |> String.trim(<<0>>) |> Base.encode16()
+    assert "2CF432A7D563" == chaddr
+    assert 64 == byte_size(msg.sname)
+    assert 128 == byte_size(msg.file)
+    assert 6 == length(msg.options)
+
     # IO.inspect(msg, limit: :infinity)
 
-    IO.puts(msg)
+    # IO.puts(msg)
   end
 
   test "from_binary 2" do
@@ -42,8 +61,25 @@ defmodule DHCP.MessageTest do
 
     msg = DHCP.Message.from_binary(raw)
 
+    assert 1 == msg.op
+    assert 1 == msg.htype
+    assert 6 == msg.hlen
+    assert 0 == msg.hops
+    assert 162240968 == msg.xid
+    assert 1 == msg.secs
+    assert 0 == msg.flags
+    assert {0, 0, 0, 0} == msg.ciaddr
+    assert {0, 0, 0, 0} == msg.yiaddr
+    assert {0, 0, 0, 0} == msg.siaddr
+    assert {0, 0, 0, 0} == msg.giaddr
+    chaddr = msg.chaddr |> String.trim(<<0>>) |> Base.encode16()
+    assert "CCF9E4617768" == chaddr
+    assert 64 == byte_size(msg.sname)
+    assert 128 == byte_size(msg.file)
+    assert 6 == length(msg.options)
+
     # IO.inspect(msg, limit: :infinity)
 
-    IO.puts(msg)
+    # IO.puts(msg)
   end
 end
