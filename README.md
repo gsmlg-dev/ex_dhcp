@@ -1,11 +1,14 @@
 # DHCP
 
-**TODO: Add description**
+[![release](https://github.com/gsmlg-dev/ex_dhcp/actions/workflows/release.yml/badge.svg)](https://github.com/gsmlg-dev/ex_dhcp/actions/workflows/release.yml) 
+[![Hex.pm](https://img.shields.io/hexpm/v/ex_dhcp.svg)](https://hex.pm/packages/ex_dhcp) 
+[![Documentation](https://img.shields.io/badge/documentation-gray)](https://hexdocs.pm/ex_dhcp)
+
+---
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `dhcp_ex` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `dhcp_ex` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -14,8 +17,3 @@ def deps do
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/dhcp_ex>.
-
