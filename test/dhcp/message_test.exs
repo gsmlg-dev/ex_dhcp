@@ -65,7 +65,7 @@ defmodule DHCP.MessageTest do
     assert 1 == msg.htype
     assert 6 == msg.hlen
     assert 0 == msg.hops
-    assert 162240968 == msg.xid
+    assert 162_240_968 == msg.xid
     assert 1 == msg.secs
     assert 0 == msg.flags
     assert {0, 0, 0, 0} == msg.ciaddr
