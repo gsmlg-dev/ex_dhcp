@@ -194,7 +194,7 @@ defmodule DHCP.Message do
     }
   end
 
-  def from_binary(
+  def from_iodata(
         <<op::8, htype::8, hlen::8, hops::8, xid::32, secs::16, flags::16, ciaddr::32, yiaddr::32,
           siaddr::32, giaddr::32, chaddr::binary-size(16), sname::binary-size(64),
           file::binary-size(128), options::binary>>
@@ -224,7 +224,7 @@ defmodule DHCP.Message do
 
   defimpl DHCP.Parameter, for: DHCP.Message do
     @impl true
-    def to_binary(%DHCP.Message{} = message) do
+    def to_iodata(%DHCP.Message{} = message) do
       <<message.op::8, message.htype::8, message.hlen::8, message.hops::8, message.xid::32,
         message.secs::16, message.flags::16, message.ciaddr::32, message.yiaddr::32,
         message.siaddr::32, message.giaddr::32, message.chaddr::binary-size(16),
