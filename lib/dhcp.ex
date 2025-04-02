@@ -18,7 +18,7 @@ defmodule DHCP do
   requesting initialization parameters from a DHCP server.
 
   """
-  def to_binary(value) do
-    DHCP.Parameter.to_binary(value)
+  def to_iodata(value) do
+    DHCP.Parameter.to_iodata(value)
   end
 end

@@ -5,7 +5,7 @@ defmodule DHCP.MessageTest do
     assert %DHCP.Message{} = DHCP.Message.new()
   end
 
-  test "from_binary 1" do
+  test "from_iodata 1" do
     raw =
       <<1, 1, 6, 0, 171, 205, 0, 217, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         44, 244, 50, 167, 213, 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -19,7 +19,7 @@ defmodule DHCP.MessageTest do
         55, 12, 1, 3, 28, 6, 15, 44, 46, 47, 31, 33, 121, 43, 12, 10, 69, 83, 80, 95, 65, 55, 68,
         53, 54, 51, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0>>
 
-    msg = DHCP.Message.from_binary(raw)
+    msg = DHCP.Message.from_iodata(raw)
 
     assert %DHCP.Message{} = msg
 
@@ -45,7 +45,7 @@ defmodule DHCP.MessageTest do
     # IO.puts(msg)
   end
 
-  test "from_binary 2" do
+  test "from_iodata 2" do
     raw =
       <<1, 1, 6, 0, 9, 171, 153, 200, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         204, 249, 228, 97, 119, 104, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -59,7 +59,7 @@ defmodule DHCP.MessageTest do
         12, 15, 26, 28, 121, 3, 33, 40, 41, 42, 119, 249, 252, 17, 57, 2, 2, 64, 50, 4, 10, 100,
         16, 177, 12, 13, 115, 117, 114, 102, 97, 99, 101, 45, 112, 114, 111, 45, 55, 255>>
 
-    msg = DHCP.Message.from_binary(raw)
+    msg = DHCP.Message.from_iodata(raw)
 
     assert 1 == msg.op
     assert 1 == msg.htype

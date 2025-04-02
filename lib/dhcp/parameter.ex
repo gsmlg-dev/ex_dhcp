@@ -1,4 +1,4 @@
 defprotocol DHCP.Parameter do
-  @spec to_binary(term()) :: binary()
-  def to_binary(value)
+  @spec to_iodata(term()) :: binary()
+  def to_iodata(value)
 end
