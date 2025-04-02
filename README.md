@@ -10,10 +10,10 @@
 
 The package can be installed by adding `dhcp_ex` to your list of dependencies in `mix.exs`:
 
-```elixir
+ ```elixir
 def deps do
   [
-    {:dhcp_ex, "~> 0.1.0"}
+    {:dhcp_ex, "~> 0.3.0"}
   ]
 end
 ```
