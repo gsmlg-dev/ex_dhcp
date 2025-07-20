@@ -5,7 +5,9 @@ defmodule DHCP.Abyss.Handler do
   Provides a thin adapter layer between :abyss UDP server and DHCP.Server core.
   """
 
-  @behaviour :abyss_handler
+  # Note: :abyss module and behaviour are optional dependencies
+  # This code is designed to work with :abyss UDP server when available
+  # @behaviour :abyss_handler
 
   alias DHCP.Server
   alias DHCP.Message
@@ -13,7 +15,6 @@ defmodule DHCP.Abyss.Handler do
   @doc """
   Abyss handler callback for UDP packet handling.
   """
-  @impl true
   def handle_packet(packet, %{src_ip: src_ip, src_port: src_port}, state) do
     case Message.from_iodata(packet) do
       %Message{} = message ->
@@ -22,7 +23,11 @@ defmodule DHCP.Abyss.Handler do
         # Send responses
         Enum.each(responses, fn response ->
           binary_response = DHCP.to_iodata(response)
-          :abyss.send_packet(state.socket, binary_response, src_ip, src_port)
+          if Code.ensure_loaded?(:abyss) do
+            :abyss.send_packet(state.socket, binary_response, src_ip, src_port)
+          else
+            {:error, ":abyss dependency not available"}
+          end
         end)
         
         {:ok, %{state | server_state: server_state}}
@@ -35,7 +40,6 @@ defmodule DHCP.Abyss.Handler do
   @doc """
   Initialize the DHCP handler with configuration.
   """
-  @impl true
   def init(config) do
     server_state = Server.init(config)
     
@@ -48,7 +52,6 @@ defmodule DHCP.Abyss.Handler do
   @doc """
   Periodic cleanup of expired leases.
   """
-  @impl true
   def handle_info(:expire_leases, state) do
     server_state = Server.expire_leases(state.server_state)
     {:ok, %{state | server_state: server_state}}
@@ -88,13 +91,18 @@ defmodule DHCP.Abyss.Handler do
   end
 
   def start_server(config) do
-    :abyss.start_link(
-      __MODULE__,
-      config,
-      name: __MODULE__,
-      port: 67,
-      broadcast: true
-    )
+    # Note: :abyss is an optional dependency
+    if Code.ensure_loaded?(:abyss) do
+      :abyss.start_link(
+        __MODULE__,
+        config,
+        name: __MODULE__,
+        port: 67,
+        broadcast: true
+      )
+    else
+      {:error, ":abyss dependency not available"}
+    end
   end
 
   @doc """

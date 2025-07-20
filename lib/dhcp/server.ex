@@ -123,7 +123,7 @@ defmodule DHCP.Server do
         response = build_ack(new_state, message, lease)
         {new_state, [response]}
       
-      {:error, :invalid_lease} ->
+      {:error, _reason} ->
         response = build_nak(message, "Requested address not available")
         {state, [response]}
     end
