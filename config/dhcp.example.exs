@@ -13,7 +13,8 @@ config :dhcp_ex, :server,
     {8, 8, 8, 8},
     {8, 8, 4, 4}
   ],
-  lease_time: 3600  # 1 hour
+  # 1 hour
+  lease_time: 3600
 
 # Alternative configuration for a different network
 # config :dhcp_ex, :server,

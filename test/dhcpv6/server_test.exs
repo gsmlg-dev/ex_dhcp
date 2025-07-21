@@ -6,14 +6,14 @@ defmodule DHCPv6.ServerTest do
   alias DHCPv6.Option
 
   @config Config.new!(
-    prefix: {0x2001, 0x0DB8, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000},
-    prefix_length: 64,
-    range_start: {0x2001, 0x0DB8, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x1000},
-    range_end: {0x2001, 0x0DB8, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x1FFF},
-    dns_servers: [{0x2001, 0x4860, 0x4860, 0, 0, 0, 0, 0x8888}],
-    lease_time: 3600,
-    rapid_commit: false
-  )
+            prefix: {0x2001, 0x0DB8, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000},
+            prefix_length: 64,
+            range_start: {0x2001, 0x0DB8, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x1000},
+            range_end: {0x2001, 0x0DB8, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x1FFF},
+            dns_servers: [{0x2001, 0x4860, 0x4860, 0, 0, 0, 0, 0x8888}],
+            lease_time: 3600,
+            rapid_commit: false
+          )
 
   setup do
     state = Server.init(@config)
@@ -32,99 +32,127 @@ defmodule DHCPv6.ServerTest do
   describe "process_message/4" do
     test "handles SOLICIT", %{state: state} do
       message = %Message{
-        msg_type: 1, # SOLICIT
+        # SOLICIT
+        msg_type: 1,
         transaction_id: <<1, 2, 3>>,
         options: [
-          Option.new(1, "test-client-duid"), # CLIENTID
-          Option.new(3, <<0, 0, 48, 57, 0, 0, 0, 0, 0, 0, 0, 0>>) # IA_NA
+          # CLIENTID
+          Option.new(1, "test-client-duid"),
+          # IA_NA
+          Option.new(3, <<0, 0, 48, 57, 0, 0, 0, 0, 0, 0, 0, 0>>)
         ]
       }
 
       {_new_state, response} = Server.process_message(state, message, {0, 0, 0, 0, 0, 0, 0, 0}, 0)
       # Handle both single response and list of responses
       actual_response = if is_list(response), do: hd(response), else: response
-      assert actual_response.msg_type == 7 # REPLY - our implementation returns REPLY for SOLICIT
+      # REPLY - our implementation returns REPLY for SOLICIT
+      assert actual_response.msg_type == 7
       assert actual_response.transaction_id == <<1, 2, 3>>
     end
 
     test "handles REQUEST", %{state: state} do
       # Create a basic request
       message = %Message{
-        msg_type: 3, # REQUEST
+        # REQUEST
+        msg_type: 3,
         transaction_id: <<1, 2, 3>>,
         options: [
-          Option.new(1, "test-client-duid"), # CLIENTID
-          Option.new(2, "test-server-duid"), # SERVERID
-          Option.new(3, <<0, 0, 48, 57, 0, 0, 0, 0, 0, 0, 0, 0>>) # IA_NA
+          # CLIENTID
+          Option.new(1, "test-client-duid"),
+          # SERVERID
+          Option.new(2, "test-server-duid"),
+          # IA_NA
+          Option.new(3, <<0, 0, 48, 57, 0, 0, 0, 0, 0, 0, 0, 0>>)
         ]
       }
 
       {_new_state, response} = Server.process_message(state, message, {0, 0, 0, 0, 0, 0, 0, 0}, 0)
       # Handle both single response and list of responses
       actual_response = if is_list(response), do: hd(response), else: response
-      assert actual_response.msg_type == 7 # REPLY
+      # REPLY
+      assert actual_response.msg_type == 7
       assert actual_response.transaction_id == <<1, 2, 3>>
     end
 
     test "handles RELEASE", %{state: state} do
       # First create a lease
       request = %Message{
-        msg_type: 3, # REQUEST
+        # REQUEST
+        msg_type: 3,
         transaction_id: <<1, 2, 3>>,
         options: [
-          Option.new(1, "test-client-duid"), # CLIENTID
-          Option.new(2, "test-server-duid"), # SERVERID
-          Option.new(3, <<0, 0, 48, 57, 0, 0, 0, 0, 0, 0, 0, 0>>) # IA_NA
+          # CLIENTID
+          Option.new(1, "test-client-duid"),
+          # SERVERID
+          Option.new(2, "test-server-duid"),
+          # IA_NA
+          Option.new(3, <<0, 0, 48, 57, 0, 0, 0, 0, 0, 0, 0, 0>>)
         ]
       }
 
-      {state_after_request, _} = Server.process_message(state, request, {0, 0, 0, 0, 0, 0, 0, 0}, 0)
+      {state_after_request, _} =
+        Server.process_message(state, request, {0, 0, 0, 0, 0, 0, 0, 0}, 0)
+
       assert length(Server.get_leases(state_after_request)) == 1
 
       # Now release it
       release = %Message{
-        msg_type: 8, # RELEASE
+        # RELEASE
+        msg_type: 8,
         transaction_id: <<1, 2, 4>>,
         options: [
-          Option.new(1, "test-client-duid"), # CLIENTID
-          Option.new(2, "test-server-duid"), # SERVERID
-          Option.new(3, <<0, 0, 48, 57, 0, 0, 0, 0, 0, 0, 0, 0>>) # IA_NA
+          # CLIENTID
+          Option.new(1, "test-client-duid"),
+          # SERVERID
+          Option.new(2, "test-server-duid"),
+          # IA_NA
+          Option.new(3, <<0, 0, 48, 57, 0, 0, 0, 0, 0, 0, 0, 0>>)
         ]
       }
 
-      {new_state, response} = Server.process_message(state_after_request, release, {0, 0, 0, 0, 0, 0, 0, 0}, 0)
+      {new_state, response} =
+        Server.process_message(state_after_request, release, {0, 0, 0, 0, 0, 0, 0, 0}, 0)
+
       # Handle both single response and list of responses
       actual_response = if is_list(response), do: hd(response), else: response
-      assert actual_response.msg_type == 7 # REPLY
-      
+      # REPLY
+      assert actual_response.msg_type == 7
+
       leases = Server.get_leases(new_state)
       assert length(leases) == 0
     end
 
     test "handles INFORMATION-REQUEST", %{state: state} do
       message = %Message{
-        msg_type: 10, # INFORMATION-REQUEST
+        # INFORMATION-REQUEST
+        msg_type: 10,
         transaction_id: <<1, 2, 3>>,
         options: [
-          Option.new(1, "test-client-duid") # CLIENTID
+          # CLIENTID
+          Option.new(1, "test-client-duid")
         ]
       }
 
       {_new_state, response} = Server.process_message(state, message, {0, 0, 0, 0, 0, 0, 0, 0}, 0)
       # Handle both single response and list of responses
       actual_response = if is_list(response), do: hd(response), else: response
-      assert actual_response.msg_type == 7 # REPLY
+      # REPLY
+      assert actual_response.msg_type == 7
       assert actual_response.transaction_id == <<1, 2, 3>>
     end
 
     test "handles unknown message type", %{state: state} do
       message = %Message{
-        msg_type: 99, # Unknown
+        # Unknown
+        msg_type: 99,
         transaction_id: <<1, 2, 3>>,
         options: []
       }
 
-      {_new_state, responses} = Server.process_message(state, message, {0, 0, 0, 0, 0, 0, 0, 0}, 0)
+      {_new_state, responses} =
+        Server.process_message(state, message, {0, 0, 0, 0, 0, 0, 0, 0}, 0)
+
       assert responses == []
     end
   end
@@ -135,12 +163,16 @@ defmodule DHCPv6.ServerTest do
 
       # Create a lease
       message = %Message{
-        msg_type: 3, # REQUEST
+        # REQUEST
+        msg_type: 3,
         transaction_id: <<1, 2, 3>>,
         options: [
-          Option.new(1, "test-client-duid"), # CLIENTID
-          Option.new(2, "test-server-duid"), # SERVERID
-          Option.new(3, <<0, 0, 48, 57, 0, 0, 0, 0, 0, 0, 0, 0>>) # IA_NA
+          # CLIENTID
+          Option.new(1, "test-client-duid"),
+          # SERVERID
+          Option.new(2, "test-server-duid"),
+          # IA_NA
+          Option.new(3, <<0, 0, 48, 57, 0, 0, 0, 0, 0, 0, 0, 0>>)
         ]
       }
 
@@ -155,16 +187,22 @@ defmodule DHCPv6.ServerTest do
     test "removes expired leases", %{state: state} do
       # Create a lease
       message = %Message{
-        msg_type: 3, # REQUEST
+        # REQUEST
+        msg_type: 3,
         transaction_id: <<1, 2, 3>>,
         options: [
-          Option.new(1, "test-client-duid"), # CLIENTID
-          Option.new(2, "test-server-duid"), # SERVERID
-          Option.new(3, <<0, 0, 48, 57, 0, 0, 0, 0, 0, 0, 0, 0>>) # IA_NA
+          # CLIENTID
+          Option.new(1, "test-client-duid"),
+          # SERVERID
+          Option.new(2, "test-server-duid"),
+          # IA_NA
+          Option.new(3, <<0, 0, 48, 57, 0, 0, 0, 0, 0, 0, 0, 0>>)
         ]
       }
 
-      {state_after_request, _} = Server.process_message(state, message, {0, 0, 0, 0, 0, 0, 0, 0}, 0)
+      {state_after_request, _} =
+        Server.process_message(state, message, {0, 0, 0, 0, 0, 0, 0, 0}, 0)
+
       assert length(Server.get_leases(state_after_request)) == 1
 
       # Force expiration

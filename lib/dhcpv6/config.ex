@@ -1,7 +1,7 @@
 defmodule DHCPv6.Config do
   @moduledoc """
   DHCPv6 Server configuration schema and validation according to RFC 3315.
-  
+
   Provides structured configuration for DHCPv6 server with validation
   and sensible defaults.
   """
@@ -30,9 +30,9 @@ defmodule DHCPv6.Config do
 
   @doc """
   Create a new DHCPv6 configuration from keyword options.
-  
+
   ## Options
-  
+
     * `:prefix` - IPv6 prefix address (required)
     * `:prefix_length` - Prefix length (required)
     * `:range_start` - Start of IPv6 range (required)
@@ -41,9 +41,9 @@ defmodule DHCPv6.Config do
     * `:lease_time` - Lease duration in seconds (default: 3600)
     * `:rapid_commit` - Enable rapid commit (default: false)
     * `:options` - Additional DHCPv6 options (default: [])
-  
+
   ## Examples
-  
+
       iex> config = DHCPv6.Config.new(
       ...>   prefix: {0x2001, 0x0DB8, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000},
       ...>   prefix_length: 64,
@@ -56,7 +56,7 @@ defmodule DHCPv6.Config do
   @spec new(keyword()) :: {:ok, t()} | {:error, String.t()}
   def new(opts) do
     config = struct!(__MODULE__, opts)
-    
+
     with :ok <- validate_config(config) do
       {:ok, config}
     end
@@ -85,47 +85,50 @@ defmodule DHCPv6.Config do
     cond do
       not is_valid_ipv6(config.prefix) ->
         {:error, "Invalid IPv6 prefix"}
-      
+
       config.prefix_length < 0 or config.prefix_length > 128 ->
         {:error, "Invalid prefix length (0-128)"}
-      
+
       not is_valid_ipv6(config.range_start) ->
         {:error, "Invalid range_start address"}
-      
+
       not is_valid_ipv6(config.range_end) ->
         {:error, "Invalid range_end address"}
-      
+
       not in_prefix?(config.range_start, config.prefix, config.prefix_length) ->
         {:error, "range_start not in prefix"}
-      
+
       not in_prefix?(config.range_end, config.prefix, config.prefix_length) ->
         {:error, "range_end not in prefix"}
-      
+
       ip6_to_int(config.range_start) > ip6_to_int(config.range_end) ->
         {:error, "range_start must be before range_end"}
-      
+
       Enum.any?(config.dns_servers, &(not is_valid_ipv6(&1))) ->
         {:error, "Invalid DNS server address"}
-      
+
       config.lease_time < 60 ->
         {:error, "lease_time must be at least 60 seconds"}
-      
+
       true ->
         :ok
     end
   end
 
-  defp is_valid_ipv6({a, b, c, d, e, f, g, h}) 
-    when a in 0x0..0xFFFF and b in 0x0..0xFFFF and c in 0x0..0xFFFF and d in 0x0..0xFFFF
-    and e in 0x0..0xFFFF and f in 0x0..0xFFFF and g in 0x0..0xFFFF and h in 0x0..0xFFFF, 
-    do: true
+  defp is_valid_ipv6({a, b, c, d, e, f, g, h})
+       when a in 0x0..0xFFFF and b in 0x0..0xFFFF and c in 0x0..0xFFFF and d in 0x0..0xFFFF and
+              e in 0x0..0xFFFF and f in 0x0..0xFFFF and g in 0x0..0xFFFF and h in 0x0..0xFFFF,
+       do: true
+
   defp is_valid_ipv6(_), do: false
 
   defp in_prefix?(ip, prefix, prefix_len) do
     ip_int = ip6_to_int(ip)
     prefix_int = ip6_to_int(prefix)
-    
-    mask = if prefix_len > 0, do: trunc(:math.pow(2, 128) - :math.pow(2, 128 - prefix_len)), else: 0
+
+    mask =
+      if prefix_len > 0, do: trunc(:math.pow(2, 128) - :math.pow(2, 128 - prefix_len)), else: 0
+
     Bitwise.band(ip_int, mask) == Bitwise.band(prefix_int, mask)
   end
 

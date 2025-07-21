@@ -13,7 +13,6 @@ defmodule DHCPv6.Option do
     :option_data
   ]
 
-
   @doc """
   Create a new DHCPv6 option.
   """
@@ -29,7 +28,10 @@ defmodule DHCPv6.Option do
   Parse DHCPv6 option from binary.
   """
   @spec parse_option(binary()) :: {:ok, t(), binary()} | {:error, String.t()}
-  def parse_option(<<option_code::16, option_length::16, option_data::binary-size(option_length), rest::binary>>) do
+  def parse_option(
+        <<option_code::16, option_length::16, option_data::binary-size(option_length),
+          rest::binary>>
+      ) do
     {:ok, %__MODULE__{option_code: option_code, option_data: option_data}, rest}
   end
 
@@ -52,15 +54,19 @@ defmodule DHCPv6.Option do
     iaid_bin = <<iaid::32>>
     t1_bin = <<t1::32>>
     t2_bin = <<t2::32>>
-    
-    iaaddr_options = Enum.map(addresses, fn addr ->
-      addr_bin = ip6_to_binary(addr)
-      iaaddr_opt = new(5, addr_bin)  # IAADDR option
-      to_iodata(iaaddr_opt)
-    end) |> Enum.join()
-    
+
+    iaaddr_options =
+      Enum.map(addresses, fn addr ->
+        addr_bin = ip6_to_binary(addr)
+        # IAADDR option
+        iaaddr_opt = new(5, addr_bin)
+        to_iodata(iaaddr_opt)
+      end)
+      |> Enum.join()
+
     ia_na_data = <<iaid_bin::binary, t1_bin::binary, t2_bin::binary, iaaddr_options::binary>>
-    new(3, ia_na_data)  # IA_NA option code
+    # IA_NA option code
+    new(3, ia_na_data)
   end
 
   @doc """

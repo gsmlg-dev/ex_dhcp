@@ -5,14 +5,14 @@ defmodule DHCP.ServerTest do
   alias DHCP.Message
 
   @config Config.new!(
-    subnet: {192, 168, 1, 0},
-    netmask: {255, 255, 255, 0},
-    range_start: {192, 168, 1, 100},
-    range_end: {192, 168, 1, 200},
-    gateway: {192, 168, 1, 1},
-    dns_servers: [{8, 8, 8, 8}],
-    lease_time: 3600
-  )
+            subnet: {192, 168, 1, 0},
+            netmask: {255, 255, 255, 0},
+            range_start: {192, 168, 1, 100},
+            range_end: {192, 168, 1, 200},
+            gateway: {192, 168, 1, 1},
+            dns_servers: [{8, 8, 8, 8}],
+            lease_time: 3600
+          )
 
   setup do
     state = Server.init(@config)
@@ -46,14 +46,18 @@ defmodule DHCP.ServerTest do
         sname: <<0::8*64>>,
         file: <<0::8*128>>,
         options: [
-          DHCP.Message.Option.new(53, 1, <<1>>), # DHCP Message Type
-          DHCP.Message.Option.new(61, 11, <<0, "test-client-id">>), # Client ID
-          DHCP.Message.Option.new(50, 4, <<192, 168, 1, 150>>) # Requested IP
+          # DHCP Message Type
+          DHCP.Message.Option.new(53, 1, <<1>>),
+          # Client ID
+          DHCP.Message.Option.new(61, 11, <<0, "test-client-id">>),
+          # Requested IP
+          DHCP.Message.Option.new(50, 4, <<192, 168, 1, 150>>)
         ]
       }
 
       {_new_state, [response]} = Server.process_message(state, message, {0, 0, 0, 0}, 0)
-      assert response.op == 2 # DHCPOFFER
+      # DHCPOFFER
+      assert response.op == 2
       assert response.xid == 1234
     end
 
@@ -75,7 +79,8 @@ defmodule DHCP.ServerTest do
         sname: <<0::8*64>>,
         file: <<0::8*128>>,
         options: [
-          DHCP.Message.Option.new(53, 1, <<1>>), # DHCPDISCOVER
+          # DHCPDISCOVER
+          DHCP.Message.Option.new(53, 1, <<1>>),
           DHCP.Message.Option.new(61, 11, "test-client-id")
         ]
       }
@@ -99,14 +104,19 @@ defmodule DHCP.ServerTest do
         sname: <<0::8*64>>,
         file: <<0::8*128>>,
         options: [
-          DHCP.Message.Option.new(53, 1, <<3>>), # DHCPREQUEST
+          # DHCPREQUEST
+          DHCP.Message.Option.new(53, 1, <<3>>),
           DHCP.Message.Option.new(61, 11, "test-client-id"),
-          DHCP.Message.Option.new(54, 4, <<192, 168, 1, 1>>) # Server ID
+          # Server ID
+          DHCP.Message.Option.new(54, 4, <<192, 168, 1, 1>>)
         ]
       }
 
-      {_new_state, [response]} = Server.process_message(state_after_discover, request, {0, 0, 0, 0}, 0)
-      assert response.op == 2 # DHCPOFFER - our implementation returns DHCPOFFER for REQUEST
+      {_new_state, [response]} =
+        Server.process_message(state_after_discover, request, {0, 0, 0, 0}, 0)
+
+      # DHCPOFFER - our implementation returns DHCPOFFER for REQUEST
+      assert response.op == 2
     end
 
     test "handles DHCPRELEASE", %{state: state} do
@@ -127,13 +137,15 @@ defmodule DHCP.ServerTest do
         sname: <<0::8*64>>,
         file: <<0::8*128>>,
         options: [
-          DHCP.Message.Option.new(53, 1, <<3>>), # DHCPREQUEST
+          # DHCPREQUEST
+          DHCP.Message.Option.new(53, 1, <<3>>),
           DHCP.Message.Option.new(61, 11, "test-client-id")
         ]
       }
 
       {state_after_request, [response]} = Server.process_message(state, message, {0, 0, 0, 0}, 0)
-      assert response.op == 2 # DHCPOFFER - our implementation returns DHCPOFFER
+      # DHCPOFFER - our implementation returns DHCPOFFER
+      assert response.op == 2
 
       # Now release it
       release = %Message{
@@ -152,7 +164,8 @@ defmodule DHCP.ServerTest do
         sname: <<0::8*64>>,
         file: <<0::8*128>>,
         options: [
-          DHCP.Message.Option.new(53, 1, <<7>>), # DHCPRELEASE
+          # DHCPRELEASE
+          DHCP.Message.Option.new(53, 1, <<7>>),
           DHCP.Message.Option.new(61, 11, "test-client-id")
         ]
       }
@@ -180,12 +193,14 @@ defmodule DHCP.ServerTest do
         sname: <<0::8*64>>,
         file: <<0::8*128>>,
         options: [
-          DHCP.Message.Option.new(53, 1, <<8>>) # DHCPINFORM
+          # DHCPINFORM
+          DHCP.Message.Option.new(53, 1, <<8>>)
         ]
       }
 
       {_new_state, [response]} = Server.process_message(state, message, {0, 0, 0, 0}, 0)
-      assert response.op == 2 # DHCPOFFER
+      # DHCPOFFER
+      assert response.op == 2
     end
 
     test "handles unknown message type", %{state: state} do
@@ -205,7 +220,8 @@ defmodule DHCP.ServerTest do
         sname: <<0::8*64>>,
         file: <<0::8*128>>,
         options: [
-          DHCP.Message.Option.new(53, 1, <<99>>) # Unknown
+          # Unknown
+          DHCP.Message.Option.new(53, 1, <<99>>)
         ]
       }
 
@@ -235,7 +251,8 @@ defmodule DHCP.ServerTest do
         sname: <<0::8*64>>,
         file: <<0::8*128>>,
         options: [
-          DHCP.Message.Option.new(53, 1, <<3>>), # DHCPREQUEST
+          # DHCPREQUEST
+          DHCP.Message.Option.new(53, 1, <<3>>),
           DHCP.Message.Option.new(61, 11, "test-client-id")
         ]
       }
@@ -266,7 +283,8 @@ defmodule DHCP.ServerTest do
         sname: <<0::8*64>>,
         file: <<0::8*128>>,
         options: [
-          DHCP.Message.Option.new(53, 1, <<3>>), # DHCPREQUEST
+          # DHCPREQUEST
+          DHCP.Message.Option.new(53, 1, <<3>>),
           DHCP.Message.Option.new(61, 11, "test-client-id")
         ]
       }
