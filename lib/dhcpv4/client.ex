@@ -1,4 +1,4 @@
-defmodule DHCP.Client do
+defmodule DHCPv4.Client do
   @moduledoc """
   DHCP client utilities for testing and simulation.
 
@@ -6,8 +6,8 @@ defmodule DHCP.Client do
   DHCP server implementations.
   """
 
-  alias DHCP.Message
-  alias DHCP.Message.Option
+  alias DHCPv4.Message
+  alias DHCPv4.Message.Option
 
   @doc """
   Create a DHCPDISCOVER message for testing.
@@ -152,7 +152,7 @@ defmodule DHCP.Client do
     server_ip = Keyword.get(opts, :server_ip, {255, 255, 255, 255})
     timeout = Keyword.get(opts, :timeout, 5000)
 
-    binary_message = DHCP.to_iodata(message)
+    binary_message = DHCPv4.to_iodata(message)
 
     case :gen_udp.open(0, [:binary, active: false]) do
       {:ok, socket} ->

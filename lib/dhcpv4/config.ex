@@ -1,4 +1,4 @@
-defmodule DHCP.Config do
+defmodule DHCPv4.Config do
   import Bitwise
 
   @moduledoc """
@@ -16,7 +16,7 @@ defmodule DHCP.Config do
           gateway: :inet.ip4_address() | nil,
           dns_servers: [:inet.ip4_address()],
           lease_time: integer(),
-          options: [DHCP.Message.Option.t()]
+          options: [DHCPv4.Message.Option.t()]
         }
 
   defstruct [
@@ -46,7 +46,7 @@ defmodule DHCP.Config do
 
   ## Examples
 
-      iex> config = DHCP.Config.new(
+      iex> config = DHCPv4.Config.new(
       ...>   subnet: {192, 168, 1, 0},
       ...>   netmask: {255, 255, 255, 0},
       ...>   range_start: {192, 168, 1, 100},

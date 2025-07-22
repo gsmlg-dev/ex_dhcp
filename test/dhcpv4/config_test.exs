@@ -1,6 +1,6 @@
-defmodule DHCP.ConfigTest do
+defmodule DHCPv4.ConfigTest do
   use ExUnit.Case
-  alias DHCP.Config
+  alias DHCPv4.Config
 
   describe "new/1" do
     test "creates valid configuration" do

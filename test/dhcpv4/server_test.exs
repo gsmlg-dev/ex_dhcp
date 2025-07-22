@@ -1,8 +1,8 @@
-defmodule DHCP.ServerTest do
+defmodule DHCPv4.ServerTest do
   use ExUnit.Case
-  alias DHCP.Server
-  alias DHCP.Config
-  alias DHCP.Message
+  alias DHCPv4.Server
+  alias DHCPv4.Config
+  alias DHCPv4.Message
 
   @config Config.new!(
             subnet: {192, 168, 1, 0},
@@ -47,11 +47,11 @@ defmodule DHCP.ServerTest do
         file: <<0::8*128>>,
         options: [
           # DHCP Message Type
-          DHCP.Message.Option.new(53, 1, <<1>>),
+          DHCPv4.Message.Option.new(53, 1, <<1>>),
           # Client ID
-          DHCP.Message.Option.new(61, 11, <<0, "test-client-id">>),
+          DHCPv4.Message.Option.new(61, 11, <<0, "test-client-id">>),
           # Requested IP
-          DHCP.Message.Option.new(50, 4, <<192, 168, 1, 150>>)
+          DHCPv4.Message.Option.new(50, 4, <<192, 168, 1, 150>>)
         ]
       }
 
@@ -80,8 +80,8 @@ defmodule DHCP.ServerTest do
         file: <<0::8*128>>,
         options: [
           # DHCPDISCOVER
-          DHCP.Message.Option.new(53, 1, <<1>>),
-          DHCP.Message.Option.new(61, 11, "test-client-id")
+          DHCPv4.Message.Option.new(53, 1, <<1>>),
+          DHCPv4.Message.Option.new(61, 11, "test-client-id")
         ]
       }
 
@@ -105,10 +105,10 @@ defmodule DHCP.ServerTest do
         file: <<0::8*128>>,
         options: [
           # DHCPREQUEST
-          DHCP.Message.Option.new(53, 1, <<3>>),
-          DHCP.Message.Option.new(61, 11, "test-client-id"),
+          DHCPv4.Message.Option.new(53, 1, <<3>>),
+          DHCPv4.Message.Option.new(61, 11, "test-client-id"),
           # Server ID
-          DHCP.Message.Option.new(54, 4, <<192, 168, 1, 1>>)
+          DHCPv4.Message.Option.new(54, 4, <<192, 168, 1, 1>>)
         ]
       }
 
@@ -138,8 +138,8 @@ defmodule DHCP.ServerTest do
         file: <<0::8*128>>,
         options: [
           # DHCPREQUEST
-          DHCP.Message.Option.new(53, 1, <<3>>),
-          DHCP.Message.Option.new(61, 11, "test-client-id")
+          DHCPv4.Message.Option.new(53, 1, <<3>>),
+          DHCPv4.Message.Option.new(61, 11, "test-client-id")
         ]
       }
 
@@ -165,8 +165,8 @@ defmodule DHCP.ServerTest do
         file: <<0::8*128>>,
         options: [
           # DHCPRELEASE
-          DHCP.Message.Option.new(53, 1, <<7>>),
-          DHCP.Message.Option.new(61, 11, "test-client-id")
+          DHCPv4.Message.Option.new(53, 1, <<7>>),
+          DHCPv4.Message.Option.new(61, 11, "test-client-id")
         ]
       }
 
@@ -194,7 +194,7 @@ defmodule DHCP.ServerTest do
         file: <<0::8*128>>,
         options: [
           # DHCPINFORM
-          DHCP.Message.Option.new(53, 1, <<8>>)
+          DHCPv4.Message.Option.new(53, 1, <<8>>)
         ]
       }
 
@@ -221,7 +221,7 @@ defmodule DHCP.ServerTest do
         file: <<0::8*128>>,
         options: [
           # Unknown
-          DHCP.Message.Option.new(53, 1, <<99>>)
+          DHCPv4.Message.Option.new(53, 1, <<99>>)
         ]
       }
 
@@ -252,8 +252,8 @@ defmodule DHCP.ServerTest do
         file: <<0::8*128>>,
         options: [
           # DHCPREQUEST
-          DHCP.Message.Option.new(53, 1, <<3>>),
-          DHCP.Message.Option.new(61, 11, "test-client-id")
+          DHCPv4.Message.Option.new(53, 1, <<3>>),
+          DHCPv4.Message.Option.new(61, 11, "test-client-id")
         ]
       }
 
@@ -284,8 +284,8 @@ defmodule DHCP.ServerTest do
         file: <<0::8*128>>,
         options: [
           # DHCPREQUEST
-          DHCP.Message.Option.new(53, 1, <<3>>),
-          DHCP.Message.Option.new(61, 11, "test-client-id")
+          DHCPv4.Message.Option.new(53, 1, <<3>>),
+          DHCPv4.Message.Option.new(61, 11, "test-client-id")
         ]
       }
 

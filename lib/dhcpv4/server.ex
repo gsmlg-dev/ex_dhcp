@@ -1,4 +1,4 @@
-defmodule DHCP.Server do
+defmodule DHCPv4.Server do
   import Bitwise
 
   @moduledoc """
@@ -8,8 +8,8 @@ defmodule DHCP.Server do
   It handles lease management, IP allocation, and DHCP message processing.
   """
 
-  alias DHCP.Message
-  alias DHCP.Message.Option
+  alias DHCPv4.Message
+  alias DHCPv4.Message.Option
 
   @type lease :: %{
           ip: :inet.ip4_address(),

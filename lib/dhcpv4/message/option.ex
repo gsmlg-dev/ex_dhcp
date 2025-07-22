@@ -1,4 +1,4 @@
-defmodule DHCP.Message.Option do
+defmodule DHCPv4.Message.Option do
   @moduledoc """
   # DHCP Option
 
@@ -1208,7 +1208,7 @@ defmodule DHCP.Message.Option do
       |  61 |  n  |  t1 |  i1 |  i2 | ...
       +-----+-----+-----+-----+-----+---
   """
-  alias DHCP.Message.Option
+  alias DHCPv4.Message.Option
 
   @type t :: %__MODULE__{
           type: 0..255,
@@ -1256,7 +1256,7 @@ defmodule DHCP.Message.Option do
 
   def to_dhcp_binary(options) do
     options_binary =
-      options |> Enum.map(fn opt -> DHCP.to_iodata(opt) end) |> Enum.join(<<>>)
+      options |> Enum.map(fn opt -> DHCPv4.to_iodata(opt) end) |> Enum.join(<<>>)
 
     <<@magic_cookie::binary, options_binary::binary, @end_option>>
   end
@@ -1615,9 +1615,9 @@ defmodule DHCP.Message.Option do
     end
   end
 
-  defimpl DHCP.Parameter, for: Option do
+  defimpl DHCPv4.Parameter, for: Option do
     @impl true
-    def to_iodata(%Option{} = option) do
+    def to_iodata(%DHCPv4.Message.Option{} = option) do
       <<option.type::8, option.length::8, option.value::binary-size(option.length)>>
     end
   end
