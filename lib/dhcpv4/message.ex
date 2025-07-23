@@ -1,4 +1,4 @@
-defmodule DHCP.Message do
+defmodule DHCPv4.Message do
   @moduledoc """
   # DHCP Message
 
@@ -137,7 +137,7 @@ defmodule DHCP.Message do
 
   """
 
-  alias DHCP.Message.Option
+  alias DHCPv4.Message.Option
 
   @type t :: %__MODULE__{
           op: 0..255,
@@ -222,9 +222,9 @@ defmodule DHCP.Message do
     {a, b, c, d}
   end
 
-  defimpl DHCP.Parameter, for: DHCP.Message do
+  defimpl DHCP.Parameter, for: DHCPv4.Message do
     @impl true
-    def to_iodata(%DHCP.Message{} = message) do
+    def to_iodata(%DHCPv4.Message{} = message) do
       <<message.op::8, message.htype::8, message.hlen::8, message.hops::8, message.xid::32,
         message.secs::16, message.flags::16, message.ciaddr::32, message.yiaddr::32,
         message.siaddr::32, message.giaddr::32, message.chaddr::binary-size(16),
@@ -233,8 +233,8 @@ defmodule DHCP.Message do
     end
   end
 
-  defimpl String.Chars, for: DHCP.Message do
-    def to_string(%DHCP.Message{} = message) do
+  defimpl String.Chars, for: DHCPv4.Message do
+    def to_string(%DHCPv4.Message{} = message) do
       """
       === DHCP Message ===
       Operation: #{message.op}
