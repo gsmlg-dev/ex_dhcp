@@ -69,12 +69,25 @@ defmodule DHCPv6.Message do
 
   defp parse_message(_), do: {:error, "Invalid DHCPv6 message format"}
 
-  defp parse_options("<<>>", acc), do: {:ok, Enum.reverse(acc)}
+  defp parse_options(<<>>, acc), do: {:ok, Enum.reverse(acc)}
 
   defp parse_options(data, acc) do
     case DHCPv6.Option.parse_option(data) do
       {:ok, option, rest} -> parse_options(rest, [option | acc])
       {:error, reason} -> {:error, reason}
+    end
+  end
+
+  defimpl DHCP.Parameter, for: DHCPv6.Message do
+    @impl true
+    def to_iodata(%DHCPv6.Message{} = message) do
+      transaction_id =
+        if byte_size(message.transaction_id) == 3, do: message.transaction_id, else: <<0, 0, 0>>
+
+      header = <<message.msg_type, transaction_id::binary>>
+      options = Enum.map(message.options, &DHCPv6.Option.to_iodata/1) |> Enum.join()
+
+      <<header::binary, options::binary>>
     end
   end
 end
