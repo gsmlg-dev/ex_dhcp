@@ -13,7 +13,7 @@ The package can be installed by adding `dhcp_ex` to your list of dependencies in
  ```elixir
 def deps do
   [
-    {:dhcp_ex, "~> 0.3.0"}
+    {:dhcp_ex, "~> 0.4.0"}
   ]
 end
 ```
