@@ -1,4 +1,4 @@
-defmodule DHCPv4 do
+defmodule DHCP do
   @moduledoc """
   Dynamic Host Configuration Protocol
 
@@ -19,6 +19,6 @@ defmodule DHCPv4 do
 
   """
   def to_iodata(value) do
-    DHCPv4.Parameter.to_iodata(value)
+    DHCP.Parameter.to_iodata(value)
   end
 end

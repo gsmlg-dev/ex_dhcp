@@ -222,7 +222,7 @@ defmodule DHCPv4.Message do
     {a, b, c, d}
   end
 
-  defimpl DHCPv4.Parameter, for: DHCPv4.Message do
+  defimpl DHCP.Parameter, for: DHCPv4.Message do
     @impl true
     def to_iodata(%DHCPv4.Message{} = message) do
       <<message.op::8, message.htype::8, message.hlen::8, message.hops::8, message.xid::32,
