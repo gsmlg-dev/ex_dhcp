@@ -5,7 +5,7 @@ on:
       release-version:
         required: true
         description: 'The version of the release'
-        default: '0.1.0'
+        default: '0.4.0'
       git-ref:
         required: true
         description: 'The git revison of repo, branch, tag or commit'
@@ -78,8 +78,8 @@ jobs:
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         with:
-          otp-version: 26
-          elixir-version: 1.17
+          otp-version: 27
+          elixir-version: 1.18
 
       - name: Install Deps
         env:
@@ -91,7 +91,6 @@ jobs:
 
       - name: Publish to hex.pm
         env:
-          MIX_ENV: prod
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
         run: |
