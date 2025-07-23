@@ -23,105 +23,105 @@ defmodule DHCPv6.Message.Option do
   ## Common DHCPv6 Options
 
   **Client Identifier (Option 1)**
-  
+
   The Client Identifier option is used to carry a DUID (DHCP Unique Identifier)
   associated with the client. Each DHCPv6 client and server has a DUID.
-  
+
   The format is:
-  
+
       Code   Len   DUID
     +-----+-----+-----+-----+---
     |  1  |  n  | d1  | d2  | ...
     +-----+-----+-----+-----+---
 
   **Server Identifier (Option 2)**
-  
+
   The Server Identifier option is used to carry a DUID associated with the server.
-  
+
   The format is:
-  
+
       Code   Len   DUID
     +-----+-----+-----+-----+---
     |  2  |  n  | d1  | d2  | ...
     +-----+-----+-----+-----+---
 
   **Identity Association for Non-temporary Addresses (IA_NA) (Option 3)**
-  
+
   The IA_NA option is used to carry an IA_NA, the parameters associated with it,
   and the addresses associated with it.
-  
+
   The format is:
-  
+
       Code   Len   IAID  T1    T2    IA_NA-options
     +-----+-----+-----+-----+-----+-----+-----+---
     |  3  |  n  | iaid| t1  | t2  | opt1| opt2| ...
     +-----+-----+-----+-----+-----+-----+-----+---
 
   **Identity Association for Temporary Addresses (IA_TA) (Option 4)**
-  
+
   The IA_TA option is used to carry an IA_TA, the parameters associated with it,
   and the addresses associated with it.
-  
+
   **Identity Association Address (IAADDR) (Option 5)**
-  
+
   The IAADDR option is used to specify IPv6 addresses associated with an IA_NA or
   IA_TA.
-  
+
   The format is:
-  
+
       Code   Len   IPv6-address  preferred-lifetime  valid-lifetime  IAADDR-options
     +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+---
     |  5  |  n  | a1  | a2  | a3  | a4  | a5  | a6  | a7  | a8  | opt1| ...
     +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+---
 
   **Option Request (Option 6)**
-  
+
   The Option Request option is used to identify a list of options in a message
   between a client and a server.
-  
+
   The format is:
-  
+
       Code   Len   option-code-1  option-code-2  ...
     +-----+-----+-----+-----+-----+-----+---
     |  6  |  n  | c1  | c2  | c3  | c4  | ...
     +-----+-----+-----+-----+-----+-----+---
 
   **Preference (Option 7)**
-  
+
   The Preference option is sent by servers to control the selection of a server
   by the client.
-  
+
   The format is:
-  
+
       Code   Len   pref-value
     +-----+-----+-----+
     |  7  |  1  | pref|
     +-----+-----+-----+
 
   **Elapsed Time (Option 8)**
-  
+
   The Elapsed Time option is used to indicate how long a client has been trying
   to complete a DHCPv6 message exchange.
-  
+
   The format is:
-  
+
       Code   Len   elapsed-time
     +-----+-----+-----+-----+
     |  8  |  2  | t1  | t2  |
     +-----+-----+-----+-----+
 
   **Relay Message (Option 9)**
-  
+
   The Relay Message option is used in a RELAY-FORW or RELAY-REPL message to carry
   DHCPv6 messages.
 
   **DNS Recursive Name Server (Option 23)**
-  
+
   The DNS Recursive Name Server option provides a list of one or more IPv6
   addresses of DNS recursive name servers.
-  
+
   The format is:
-  
+
       Code   Len   IPv6-address-1  IPv6-address-2  ...
     +-----+-----+-----+-----+-----+-----+-----+---
     | 23  |  n  | a1  | a2  | a3  | a4  | a5  | ...
@@ -271,6 +271,7 @@ defmodule DHCPv6.Message.Option do
     end
 
     defp parse_ipv6_list(data) when byte_size(data) < 16, do: []
+
     defp parse_ipv6_list(data) do
       <<a::16, b::16, c::16, d::16, e::16, f::16, g::16, h::16, rest::binary>> = data
       server = {a, b, c, d, e, f, g, h}

@@ -61,7 +61,6 @@ defmodule DHCPv6.Message do
   - **Option 23**: DNS Recursive Name Server
   """
 
-
   @type t :: %__MODULE__{
           msg_type: integer(),
           transaction_id: binary(),
