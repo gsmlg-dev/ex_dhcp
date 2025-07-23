@@ -9,7 +9,7 @@ defmodule DHCPv6.Server do
   """
 
   alias DHCPv6.Message
-  alias DHCPv6.Option
+  alias DHCPv6.Message.Option
   alias DHCPv6.Config
 
   @type lease :: %{

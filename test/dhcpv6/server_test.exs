@@ -3,7 +3,7 @@ defmodule DHCPv6.ServerTest do
   alias DHCPv6.Server
   alias DHCPv6.Config
   alias DHCPv6.Message
-  alias DHCPv6.Option
+  alias DHCPv6.Message.Option
 
   @config Config.new!(
             prefix: {0x2001, 0x0DB8, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000},

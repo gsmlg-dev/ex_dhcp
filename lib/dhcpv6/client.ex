@@ -7,7 +7,7 @@ defmodule DHCPv6.Client do
   """
 
   alias DHCPv6.Message
-  alias DHCPv6.Option
+  alias DHCPv6.Message.Option
 
   @doc """
   Create a SOLICIT message for testing.
