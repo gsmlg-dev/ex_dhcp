@@ -78,13 +78,30 @@ defmodule DHCPv4.Message.OptionTest do
 
     test "parses multiple options correctly" do
       magic_cookie = <<99, 130, 83, 99>>
+
       options = <<
-        53, 1, 2,                    # DHCP Message Type: DHCPOFFER
-        54, 4, 192, 168, 1, 1,       # Server Identifier
-        51, 4, 0, 0, 14, 16,         # Lease Time: 3600 seconds
-        255                          # End Option
+        # DHCP Message Type: DHCPOFFER
+        53,
+        1,
+        2,
+        # Server Identifier
+        54,
+        4,
+        192,
+        168,
+        1,
+        1,
+        # Lease Time: 3600 seconds
+        51,
+        4,
+        0,
+        0,
+        14,
+        16,
+        # End Option
+        255
       >>
-      
+
       parsed = Option.parse(magic_cookie <> options)
       assert length(parsed) == 3
 
@@ -121,7 +138,11 @@ defmodule DHCPv4.Message.OptionTest do
       ]
 
       binary = Option.to_dhcp_binary(options)
-      expected = <<99, 130, 83, 99, 53, 1, 2, 54, 4, 192, 168, 1, 1, 51, 4, 0, 0, 14, 16, 3, 4, 192, 168, 1, 1, 6, 8, 8, 8, 8, 8, 8, 8, 4, 4, 255>>
+
+      expected =
+        <<99, 130, 83, 99, 53, 1, 2, 54, 4, 192, 168, 1, 1, 51, 4, 0, 0, 14, 16, 3, 4, 192, 168,
+          1, 1, 6, 8, 8, 8, 8, 8, 8, 8, 4, 4, 255>>
+
       assert binary == expected
     end
   end
@@ -181,7 +202,9 @@ defmodule DHCPv4.Message.OptionTest do
     test "converts option to string representation" do
       option = Option.new(53, 1, <<1>>)
       str = to_string(option)
-      assert str =~ "Option(53): DHCP Message Type: \"DHCPDISCOVER - Client broadcast to locate available servers\""
+
+      assert str =~
+               "Option(53): DHCP Message Type: \"DHCPDISCOVER - Client broadcast to locate available servers\""
     end
 
     test "handles IP address options in string format" do
