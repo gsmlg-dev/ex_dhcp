@@ -196,6 +196,20 @@ defmodule DHCPv4.Message.OptionTest do
       assert type == :raw
       assert value == <<1, 2, 3, 4>>
     end
+
+    test "decodes TFTP server name option" do
+      {name, type, value} = Option.decode_option_value(66, 11, "tftpserver")
+      assert name == "TFTP server name"
+      assert type == :binary
+      assert value == "tftpserver"
+    end
+
+    test "decodes bootfile name option" do
+      {name, type, value} = Option.decode_option_value(67, 9, "bootfile")
+      assert name == "Bootfile name"
+      assert type == :binary
+      assert value == "bootfile"
+    end
   end
 
   describe "String.Chars implementation" do

@@ -96,6 +96,8 @@ defmodule DHCPv4.Message.Option.Decoder do
       63 -> Types.decode_netware_ip_sub_options(value)
       64 -> Types.decode_nis_plus_domain(value)
       65 -> Types.decode_nis_plus_servers(value, length)
+      66 -> Types.decode_tftp_server_name(value)
+      67 -> Types.decode_bootfile_name(value)
       68 -> Types.decode_mobile_ip_home_agent(value, length)
       69 -> Types.decode_smtp_server(value, length)
       70 -> Types.decode_pop3_server(value, length)
