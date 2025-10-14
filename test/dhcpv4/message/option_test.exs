@@ -55,7 +55,7 @@ defmodule DHCPv4.Message.OptionTest do
       options = <<53, 1, 1, 1, 4, 255, 255, 255, 0, 255>>
       binary = magic_cookie <> options
 
-      parsed = Option.parse(binary)
+      {:ok, parsed} = Option.parse(binary)
       assert length(parsed) == 2
 
       [message_type, subnet_mask] = parsed
@@ -69,11 +69,11 @@ defmodule DHCPv4.Message.OptionTest do
     end
 
     test "handles empty options" do
-      assert Option.parse(<<99, 130, 83, 99, 255>>) == []
+      assert Option.parse(<<99, 130, 83, 99, 255>>) == {:ok, []}
     end
 
     test "handles only magic cookie and end option" do
-      assert Option.parse(<<99, 130, 83, 99, 255>>) == []
+      assert Option.parse(<<99, 130, 83, 99, 255>>) == {:ok, []}
     end
 
     test "parses multiple options correctly" do
@@ -102,7 +102,7 @@ defmodule DHCPv4.Message.OptionTest do
         255
       >>
 
-      parsed = Option.parse(magic_cookie <> options)
+      {:ok, parsed} = Option.parse(magic_cookie <> options)
       assert length(parsed) == 3
 
       [type, server, lease] = parsed

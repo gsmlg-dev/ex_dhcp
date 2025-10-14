@@ -199,23 +199,29 @@ defmodule DHCPv4.Message do
           siaddr::32, giaddr::32, chaddr::binary-size(16), sname::binary-size(64),
           file::binary-size(128), options::binary>>
       ) do
-    %__MODULE__{
-      op: op,
-      htype: htype,
-      hlen: hlen,
-      hops: hops,
-      xid: xid,
-      secs: secs,
-      flags: flags,
-      ciaddr: binary_to_ip4_address(<<ciaddr::32>>),
-      yiaddr: binary_to_ip4_address(<<yiaddr::32>>),
-      siaddr: binary_to_ip4_address(<<siaddr::32>>),
-      giaddr: binary_to_ip4_address(<<giaddr::32>>),
-      chaddr: chaddr,
-      sname: sname,
-      file: file,
-      options: Option.parse(options)
-    }
+    case Option.parse(options) do
+      {:ok, parsed_options} ->
+        %__MODULE__{
+          op: op,
+          htype: htype,
+          hlen: hlen,
+          hops: hops,
+          xid: xid,
+          secs: secs,
+          flags: flags,
+          ciaddr: binary_to_ip4_address(<<ciaddr::32>>),
+          yiaddr: binary_to_ip4_address(<<yiaddr::32>>),
+          siaddr: binary_to_ip4_address(<<siaddr::32>>),
+          giaddr: binary_to_ip4_address(<<giaddr::32>>),
+          chaddr: chaddr,
+          sname: sname,
+          file: file,
+          options: parsed_options
+        }
+
+      {:error, reason} ->
+        raise ArgumentError, "Failed to parse DHCP options: #{reason}"
+    end
   end
 
   defp binary_to_ip4_address(<<a::8, b::8, c::8, d::8>>) do

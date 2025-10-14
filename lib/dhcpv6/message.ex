@@ -105,9 +105,10 @@ defmodule DHCPv6.Message do
       if byte_size(message.transaction_id) == 3, do: message.transaction_id, else: <<0, 0, 0>>
 
     header = <<message.msg_type, transaction_id::binary>>
-    options = Enum.map(message.options, &DHCPv6.Message.Option.to_iodata/1) |> Enum.join()
+    options_iolist = Enum.map(message.options, &DHCPv6.Message.Option.to_iodata/1)
 
-    <<header::binary, options::binary>>
+    [header, options_iolist]
+    |> IO.iodata_to_binary()
   end
 
   defp parse_message(<<msg_type, transaction_id::binary-size(3), rest::binary>>) do
@@ -138,14 +139,6 @@ defmodule DHCPv6.Message do
 
   defimpl DHCP.Parameter, for: DHCPv6.Message do
     @impl true
-    def to_iodata(%DHCPv6.Message{} = message) do
-      transaction_id =
-        if byte_size(message.transaction_id) == 3, do: message.transaction_id, else: <<0, 0, 0>>
-
-      header = <<message.msg_type, transaction_id::binary>>
-      options = Enum.map(message.options, &DHCPv6.Message.Option.to_iodata/1) |> Enum.join()
-
-      <<header::binary, options::binary>>
-    end
+    def to_iodata(message), do: DHCPv6.Message.to_iodata(message)
   end
 end

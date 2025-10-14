@@ -8,6 +8,7 @@ defmodule DHCPv4.Client do
 
   alias DHCPv4.Message
   alias DHCPv4.Message.Option
+  alias DHCP.SecureRandom
 
   @doc """
   Create a DHCPDISCOVER message for testing.
@@ -22,7 +23,7 @@ defmodule DHCPv4.Client do
   @spec discover(keyword()) :: Message.t()
   def discover(opts) do
     mac = Keyword.fetch!(opts, :mac)
-    xid = Keyword.get(opts, :xid, :rand.uniform(0xFFFFFFFF))
+    xid = Keyword.get(opts, :xid, SecureRandom.generate_dhcpv4_xid())
     hostname = Keyword.get(opts, :hostname)
     requested_ip = Keyword.get(opts, :requested_ip)
 
@@ -56,7 +57,7 @@ defmodule DHCPv4.Client do
     mac = Keyword.fetch!(opts, :mac)
     server_ip = Keyword.fetch!(opts, :server_ip)
     requested_ip = Keyword.fetch!(opts, :requested_ip)
-    xid = Keyword.get(opts, :xid, :rand.uniform(0xFFFFFFFF))
+    xid = Keyword.get(opts, :xid, SecureRandom.generate_dhcpv4_xid())
 
     Message.new()
     # BOOTREQUEST
@@ -88,7 +89,7 @@ defmodule DHCPv4.Client do
     mac = Keyword.fetch!(opts, :mac)
     server_ip = Keyword.fetch!(opts, :server_ip)
     leased_ip = Keyword.fetch!(opts, :leased_ip)
-    xid = Keyword.get(opts, :xid, :rand.uniform(0xFFFFFFFF))
+    xid = Keyword.get(opts, :xid, SecureRandom.generate_dhcpv4_xid())
 
     Message.new()
     # BOOTREQUEST
@@ -120,7 +121,7 @@ defmodule DHCPv4.Client do
     mac = Keyword.fetch!(opts, :mac)
     server_ip = Keyword.fetch!(opts, :server_ip)
     declined_ip = Keyword.fetch!(opts, :declined_ip)
-    xid = Keyword.get(opts, :xid, :rand.uniform(0xFFFFFFFF))
+    xid = Keyword.get(opts, :xid, SecureRandom.generate_dhcpv4_xid())
 
     Message.new()
     # BOOTREQUEST

@@ -8,6 +8,7 @@ defmodule DHCPv6.Client do
 
   alias DHCPv6.Message
   alias DHCPv6.Message.Option
+  alias DHCP.SecureRandom
 
   @doc """
   Create a SOLICIT message for testing.
@@ -24,7 +25,7 @@ defmodule DHCPv6.Client do
   def solicit(opts) do
     duid = Keyword.fetch!(opts, :duid)
     iaid = Keyword.fetch!(opts, :iaid)
-    transaction_id = Keyword.get(opts, :transaction_id, :rand.uniform(0xFFFFFF))
+    transaction_id = Keyword.get(opts, :transaction_id, SecureRandom.generate_dhcpv6_transaction_id())
     rapid_commit = Keyword.get(opts, :rapid_commit, false)
     dns_servers = Keyword.get(opts, :dns_servers, true)
 
@@ -56,7 +57,7 @@ defmodule DHCPv6.Client do
     server_duid = Keyword.fetch!(opts, :server_duid)
     iaid = Keyword.fetch!(opts, :iaid)
     addresses = Keyword.fetch!(opts, :addresses)
-    transaction_id = Keyword.get(opts, :transaction_id, :rand.uniform(0xFFFFFF))
+    transaction_id = Keyword.get(opts, :transaction_id, SecureRandom.generate_dhcpv6_transaction_id())
 
     Message.new()
     # REQUEST
@@ -86,7 +87,7 @@ defmodule DHCPv6.Client do
     server_duid = Keyword.fetch!(opts, :server_duid)
     iaid = Keyword.fetch!(opts, :iaid)
     addresses = Keyword.fetch!(opts, :addresses)
-    transaction_id = Keyword.get(opts, :transaction_id, :rand.uniform(0xFFFFFF))
+    transaction_id = Keyword.get(opts, :transaction_id, SecureRandom.generate_dhcpv6_transaction_id())
 
     Message.new()
     # RENEW
@@ -116,7 +117,7 @@ defmodule DHCPv6.Client do
     server_duid = Keyword.fetch!(opts, :server_duid)
     iaid = Keyword.fetch!(opts, :iaid)
     addresses = Keyword.fetch!(opts, :addresses)
-    transaction_id = Keyword.get(opts, :transaction_id, :rand.uniform(0xFFFFFF))
+    transaction_id = Keyword.get(opts, :transaction_id, SecureRandom.generate_dhcpv6_transaction_id())
 
     Message.new()
     # RELEASE
@@ -141,7 +142,7 @@ defmodule DHCPv6.Client do
   @spec information_request(keyword()) :: Message.t()
   def information_request(opts) do
     duid = Keyword.fetch!(opts, :duid)
-    transaction_id = Keyword.get(opts, :transaction_id, :rand.uniform(0xFFFFFF))
+    transaction_id = Keyword.get(opts, :transaction_id, SecureRandom.generate_dhcpv6_transaction_id())
     dns_servers = Keyword.get(opts, :dns_servers, true)
 
     Message.new()
