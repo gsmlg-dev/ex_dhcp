@@ -20,7 +20,12 @@ This is `ex_dhcp`, a pure Elixir implementation of DHCP (Dynamic Host Configurat
 DHCPv4 (RFC 2131/2132):
 - **DHCPv4**: Main DHCPv4 module providing the public API
 - **DHCPv4.Message**: Core DHCPv4 message struct with full RFC 2131 compliance
-- **DHCPv4.Message.Option**: DHCPv4 options handling per RFC 2132
+- **DHCPv4.Message.Option**: DHCPv4 options handling (splits into specialized modules)
+- **DHCPv4.Message.Option.Decoder**: Option parsing logic with functional error handling
+- **DHCPv4.Message.Option.Types**: Type-specific option decoding functions
+- **DHCPv4.Message.Option.Serializer**: Option serialization using IO.iodata
+- **DHCPv4.Message.Option.Formatter**: Option display formatting
+- **DHCPv4.Message.Option.Helpers**: Common utility functions
 - **DHCPv4.Server**: DHCPv4 server implementation
 - **DHCPv4.Client**: DHCPv4 client implementation
 - **DHCPv4.Config**: DHCPv4 configuration management
@@ -35,6 +40,7 @@ DHCPv6 (RFC 3315/3633):
 
 Shared:
 - **DHCP.Parameter**: Protocol for binary serialization/deserialization
+- **DHCP.SecureRandom**: Cryptographically secure random number generation
 
 ### Key Types
 
@@ -98,7 +104,8 @@ DHCPv4:
 - **Parse DHCPv4 message**: `DHCPv4.Message.from_iodata(binary)`
 - **Create DHCPv4 message**: `DHCPv4.Message.new()`
 - **Serialize DHCPv4 message**: `DHCP.Parameter.to_iodata(message)`
-- **Parse DHCPv4 options**: `DHCPv4.Message.Option.parse(binary)`
+- **Parse DHCPv4 options**: `DHCPv4.Message.Option.parse(binary)` (returns `{:ok, options}`)
+- **Parse DHCPv4 options (legacy)**: `DHCPv4.Message.Option.parse!(binary)` (raises on error)
 - **Create DHCPv4 option**: `DHCPv4.Message.Option.new(type, length, value)`
 
 DHCPv6:
@@ -107,6 +114,11 @@ DHCPv6:
 - **Serialize DHCPv6 message**: `DHCP.Parameter.to_iodata(message)`
 - **Parse DHCPv6 options**: `DHCPv6.Message.Option.parse_option(binary)`
 - **Create DHCPv6 option**: `DHCPv6.Message.Option.new(code, length, value)`
+
+Secure Random Numbers:
+- **Generate DHCPv4 transaction ID**: `DHCP.SecureRandom.generate_dhcpv4_xid()`
+- **Generate DHCPv6 transaction ID**: `DHCP.SecureRandom.generate_dhcpv6_transaction_id()`
+- **Generate IA ID**: `DHCP.SecureRandom.generate_ia_id()`
 
 ## Dependencies
 
@@ -121,11 +133,18 @@ DHCPv6:
 lib/
 ├── dhcp.ex                    # Legacy main API module
 ├── dhcp/
-│   └── parameter.ex           # Binary serialization protocol
+│   ├── parameter.ex           # Binary serialization protocol
+│   └── secure_random.ex       # Cryptographically secure random numbers
 ├── dhcpv4/                    # DHCPv4 implementation
 │   ├── message.ex             # DHCPv4 message struct and parsing
 │   ├── message/
-│   │   └── option.ex          # DHCPv4 options handling
+│   │   ├── option.ex          # DHCPv4 options public interface
+│   │   ├── option/
+│   │   │   ├── decoder.ex     # Option parsing logic
+│   │   │   ├── types.ex       # Type-specific decoding
+│   │   │   ├── serializer.ex  # Option serialization
+│   │   │   ├── formatter.ex   # Option display formatting
+│   │   │   └── helpers.ex     # Common utilities
 │   ├── server.ex              # DHCPv4 server implementation
 │   ├── client.ex              # DHCPv4 client implementation
 │   └── config.ex              # DHCPv4 configuration management
@@ -151,6 +170,15 @@ test/
     ├── server_test.exs
     └── config_test.exs
 ```
+
+## Error Handling Patterns
+
+This codebase uses functional error handling patterns:
+
+- `DHCPv4.Message.Option.parse/1` returns `{:ok, options} | {:error, reason}`
+- Legacy `DHCPv4.Message.Option.parse!/1` raises on error (for backward compatibility)
+- Most parsing functions follow the `{:ok, result} | {:error, reason}` pattern
+- Error tuples provide descriptive error messages for debugging
 
 ## RFC Compliance
 
