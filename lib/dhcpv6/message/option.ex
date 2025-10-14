@@ -140,8 +140,24 @@ defmodule DHCPv6.Message.Option do
 
   @doc """
   Create a new DHCPv6 option.
+
+  ## Parameters
+
+    * `option_code` - DHCPv6 option code (0-65535)
+    * `option_data` - Binary data for the option
+
+  ## Returns
+
+    A new `DHCPv6.Message.Option` struct
+
+  ## Examples
+
+      iex> option = DHCPv6.Message.Option.new(23, <<0x2001, 0x4860, 0x4860::16, 0, 0, 0, 0, 0x8888::16>>)
+      iex> option.option_code
+      23
+
   """
-  @spec new(integer(), binary()) :: t()
+  @spec new(non_neg_integer(), binary()) :: t()
   def new(option_code, option_data) do
     %__MODULE__{
       option_code: option_code,
@@ -150,7 +166,25 @@ defmodule DHCPv6.Message.Option do
   end
 
   @doc """
-  Parse DHCPv6 option from binary.
+  Parse DHCPv6 option from binary data.
+
+  ## Parameters
+
+    * `data` - Binary data containing DHCPv6 option(s)
+
+  ## Returns
+
+    * `{:ok, option, rest}` - Successfully parsed option and remaining data
+    * `{:error, reason}` - Parsing failed
+
+  ## Examples
+
+      iex> {:ok, option, rest} = DHCPv6.Message.Option.parse_option(<<23, 0, 16, 0x2001, 0x4860, 0x4860::16, 0, 0, 0, 0, 0x8888::16>>)
+      iex> option.option_code
+      23
+      iex> byte_size(rest)
+      0
+
   """
   @spec parse_option(binary()) :: {:ok, t(), binary()} | {:error, String.t()}
   def parse_option(
@@ -173,8 +207,30 @@ defmodule DHCPv6.Message.Option do
 
   @doc """
   Create IA_NA option (Identity Association for Non-temporary Addresses).
+
+  The IA_NA option is used to carry an IA_NA, the parameters associated with it,
+  and the IPv6 addresses associated with it.
+
+  ## Parameters
+
+    * `iaid` - Identity Association Identifier (4 bytes)
+    * `t1` - Rebind time in seconds (4 bytes)
+    * `t2` - Rebind time in seconds (4 bytes)
+    * `addresses` - List of IPv6 addresses to include
+
+  ## Returns
+
+    A new `DHCPv6.Message.Option` struct containing the IA_NA option
+
+  ## Examples
+
+      iex> option = DHCPv6.Message.Option.ia_na(12345, 3600, 7200, [{0x2001, 0xDB8, 0, 0, 0, 0, 0, 1}])
+      iex> option.option_code
+      3
+
   """
-  @spec ia_na(integer(), integer(), integer(), [:inet.ip6_address()]) :: t()
+  @spec ia_na(non_neg_integer(), non_neg_integer(), non_neg_integer(), [:inet.ip6_address()]) ::
+          t()
   def ia_na(iaid, t1, t2, addresses) do
     iaid_bin = <<iaid::32>>
     t1_bin = <<t1::32>>
@@ -195,7 +251,26 @@ defmodule DHCPv6.Message.Option do
   end
 
   @doc """
-  Create DNS servers option.
+  Create DNS servers option (Option 23).
+
+  The DNS Recursive Name Server option provides a list of one or more IPv6
+  addresses of DNS recursive name servers to be used by the client.
+
+  ## Parameters
+
+    * `servers` - List of IPv6 addresses of DNS servers
+
+  ## Returns
+
+    A new `DHCPv6.Message.Option` struct containing the DNS servers option
+
+  ## Examples
+
+      iex> google_dns = {0x2001, 0x4860, 0x4860, 0, 0, 0, 0, 0x8888}
+      iex> option = DHCPv6.Message.Option.dns_servers([google_dns])
+      iex> option.option_code
+      23
+
   """
   @spec dns_servers([:inet.ip6_address()]) :: t()
   def dns_servers(servers) do

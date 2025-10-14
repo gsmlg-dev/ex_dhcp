@@ -14,7 +14,7 @@ defmodule DHCPv6.Config do
           dns_servers: [:inet.ip6_address()],
           lease_time: integer(),
           rapid_commit: boolean(),
-          options: [DHCPv6.Option.t()]
+          options: [DHCPv6.Message.Option.t()]
         }
 
   defstruct [

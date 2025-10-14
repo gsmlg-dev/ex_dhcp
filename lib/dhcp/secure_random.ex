@@ -51,7 +51,7 @@ defmodule DHCP.SecureRandom do
 
     Binary with the specified number of random bytes.
   """
-  @spec generate_bytes(non_neg_integer()) :: binary()
+  @spec generate_bytes(pos_integer()) :: binary()
   def generate_bytes(count) when count > 0 do
     :crypto.strong_rand_bytes(count)
   end
@@ -74,11 +74,12 @@ defmodule DHCP.SecureRandom do
       7
   """
   @spec uniform(non_neg_integer(), non_neg_integer()) :: non_neg_integer()
-  def uniform(min, max) when min <= max do
+  def uniform(min, max) when min <= max and min >= 0 and max >= 0 do
     range = max - min + 1
     bits_needed = range |> :math.log2() |> math_ceil() |> max(1)
 
-    <<random::size(bits_needed)>> = :crypto.strong_rand_bytes(math_ceil(bits_needed / 8))
+    bytes_needed = math_ceil(bits_needed / 8)
+    <<random::size(bits_needed)>> = :crypto.strong_rand_bytes(bytes_needed)
     min + rem(random, range)
   end
 

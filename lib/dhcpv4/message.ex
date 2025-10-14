@@ -1,6 +1,12 @@
 defmodule DHCPv4.Message do
   @moduledoc """
-  # DHCP Message
+  DHCPv4 message structure and parsing implementation.
+
+  This module provides comprehensive DHCPv4 message parsing and serialization
+  based on [RFC 2131](https://datatracker.ietf.org/doc/html/rfc2131). It supports
+  the complete DHCPv4 message format including all header fields and options.
+
+  # DHCP Message Format
 
       Format of a DHCP message
 
@@ -194,6 +200,29 @@ defmodule DHCPv4.Message do
     }
   end
 
+  @doc """
+  Parse DHCPv4 message from binary data.
+
+  ## Parameters
+
+    * `data` - Binary data containing DHCPv4 message
+
+  ## Returns
+
+    * `t()` - Parsed DHCPv4 message struct
+
+  ## Examples
+
+      iex> message_data = <<1, 1, 6, 0, 0x12345678::32, 0, 0, 0::32, 0::32, 0::32, 0::32,
+      ...>                    0::16*8, 0::8*64, 0::8*128, 99, 130, 83, 99, 255>>
+      iex> message = DHCPv4.Message.from_iodata(message_data)
+      iex> message.op
+      1
+      iex> message.xid
+      0x12345678
+
+  """
+  @spec from_iodata(binary()) :: t()
   def from_iodata(
         <<op::8, htype::8, hlen::8, hops::8, xid::32, secs::16, flags::16, ciaddr::32, yiaddr::32,
           siaddr::32, giaddr::32, chaddr::binary-size(16), sname::binary-size(64),
@@ -224,6 +253,7 @@ defmodule DHCPv4.Message do
     end
   end
 
+  # Convert 32-bit binary to IPv4 address tuple
   defp binary_to_ip4_address(<<a::8, b::8, c::8, d::8>>) do
     {a, b, c, d}
   end
