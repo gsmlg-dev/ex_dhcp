@@ -26,6 +26,8 @@ defmodule DHCP.SecureRandom do
   @spec generate_dhcpv6_transaction_id() :: non_neg_integer()
   def generate_dhcpv6_transaction_id do
     <<tid::24>> = :crypto.strong_rand_bytes(3)
+
+    
     tid
   end
 

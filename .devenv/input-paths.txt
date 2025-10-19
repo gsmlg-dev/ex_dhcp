@@ -1,7 +1,0 @@
-/home/gao/Workspace/gsmlg-dev/ex_dhcp/.devenv/flake.json
-/home/gao/Workspace/gsmlg-dev/ex_dhcp/.devenv.flake.nix
-/home/gao/Workspace/gsmlg-dev/ex_dhcp/.env
-/home/gao/Workspace/gsmlg-dev/ex_dhcp/devenv.local.nix
-/home/gao/Workspace/gsmlg-dev/ex_dhcp/devenv.lock
-/home/gao/Workspace/gsmlg-dev/ex_dhcp/devenv.nix
-/home/gao/Workspace/gsmlg-dev/ex_dhcp/devenv.yaml
